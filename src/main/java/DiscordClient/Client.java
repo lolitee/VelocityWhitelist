@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 
 public class Client {
-
     private final String token;
     private final JDA jda;
 

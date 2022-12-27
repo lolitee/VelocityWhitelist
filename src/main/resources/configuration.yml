@@ -2,19 +2,21 @@
 version: 1.0
   # providers: h2 or mysql
 database:
-  provider: mysql
-  address: 127.0.0.1:3306
-  username: root
-  password: root
-  database: minecraft
-  table_prefix: tee_whitelist
+  provider: 'mysql'
+  address: '127.0.0.1:3306'
+  username: 'root'
+  password: 'root'
+  database: 'minecraft'
+  table_prefix: 'tee_whitelist'
 
   #discord stuff
 discord:
-  token: jd1iou2j1iuo2hdoi1u2hdoi1u2h1d2kdl12jdklj1ndi12bhduiy12hdi12hd21
-  guild_id: 123456789123456789
+  token: ''
+  guild_id: '123456789123456789'
   prefix: !
   command_support: true
+  presence: 0
+  status: 0
 
   # register modules for via api idk
   modules:

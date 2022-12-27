@@ -14,6 +14,9 @@ import java.util.Random;
 import static com.lolitee.teesvelocitywhitelist.TeesVelocityWhitelist.logger;
 
 public class PlayerJoin {
+
+    Random rnd = new Random();
+
     @Subscribe
     public void onPlayerJoin(PlayerChooseInitialServerEvent event){
         Player p = event.getPlayer();
@@ -39,11 +42,11 @@ public class PlayerJoin {
     private String getRandomString(int count){
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder result = new StringBuilder();
-        Random rnd = new Random();
         rnd.setSeed(System.currentTimeMillis());
-        while (characters.length() <= count){
+        while (result.length() <= count){
             int index = (int) (rnd.nextFloat() * characters.length());
             result.append(characters.charAt(index));
+            logger.info(result.toString());
         }
         return result.toString();
     }
