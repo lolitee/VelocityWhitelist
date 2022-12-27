@@ -6,19 +6,13 @@ import Database.IDatabase;
 import Database.providers.MariaDB;
 import com.google.inject.Inject;
 import com.lolitee.teesvelocitywhitelist.configuration.ConfigurationManager;
+import com.lolitee.teesvelocitywhitelist.events.PlayerChat;
+import com.lolitee.teesvelocitywhitelist.events.PlayerJoin;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.player.PlayerChatEvent;
-import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
-import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -39,18 +33,15 @@ public class TeesVelocityWhitelist {
     public static Logger logger;
 
     private final HashMap<UUID, String> tokens = new HashMap<>();
-    private final Path dataDirectory;
     IDatabase db;
-
     @Inject
     public TeesVelocityWhitelist(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) throws IOException {
         TeesVelocityWhitelist.server = server;
         TeesVelocityWhitelist.logger = logger;
-        this.dataDirectory = dataDirectory;
         Files.createDirectories(dataDirectory);
         new ConfigurationManager(dataDirectory);
 
-        switch(provider){
+        switch (provider) {
 
             case MYSQL:
                 db = new MariaDB(address, username, password, database);
@@ -61,40 +52,12 @@ public class TeesVelocityWhitelist {
         }
 
     }
-
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         logger.info("Starting " + TeesVelocityWhitelist.class.getName() + "-" + BuildConstants.VERSION);
         db.executeNonQuery(new TableInitializationCommand());
+
+        server.getEventManager().register(this, new PlayerJoin());
+        server.getEventManager().register(this, new PlayerChat());
     }
-
-    @Subscribe
-    public void onPlayerChat(PlayerChatEvent event) {
-        Player p = event.getPlayer();
-        logger.info(p.getUsername());
-    }
-
-    @Subscribe
-    public void onPlayerJoin(PlayerChooseInitialServerEvent event){
-        Player p = event.getPlayer();
-        logger.info(p.getUsername() + " has joined");
-
-        final TextComponent textComponent = Component.text()
-                .append(Component.text("Disconnected!")
-                        .color(TextColor.color(NamedTextColor.GOLD))
-                        .decoration(TextDecoration.BOLD, true))
-                .appendNewline()
-                .append(Component.text("Please execute the following command on Discord:"))
-                .appendNewline()
-                .appendNewline()
-                .append(Component.text("/link 12s1j1")
-                        .color(TextColor.color(NamedTextColor.AQUA)))
-                .appendNewline()
-                .append(Component.text("Server: Aram Warriors 2.0")
-                        .color(TextColor.fromHexString("#33404d")))
-                .build();
-
-        p.disconnect(textComponent);
-    }
-
 }
