@@ -9,17 +9,19 @@ import static com.lolitee.teesvelocitywhitelist.TeesVelocityWhitelist.logger;
 
 public interface IDatabase {
     Connection createConnection();
-    default SQLData execute(ICommand cmd){
+    default SQLData execute(AbstractCommand cmd){
         return null;
     }
 
-    default boolean executeNonQuery(ICommand cmd){
+    default boolean executeNonQuery(AbstractCommand cmd){
 
         Connection conn = createConnection();
         try {
             PreparedStatement stmt = conn.prepareStatement(cmd.sql());
 
-            // parameters later on against injections
+            for (int i = 0; i < cmd.vals.length; i++) {
+                stmt.setObject(i + 1, cmd.vals[i]);
+            }
 
             return stmt.execute();
         } catch (SQLException e) {

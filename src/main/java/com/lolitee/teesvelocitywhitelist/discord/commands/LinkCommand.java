@@ -1,8 +1,9 @@
 package com.lolitee.teesvelocitywhitelist.discord.commands;
 
-import com.lolitee.teesvelocitywhitelist.classes.Code;
+import com.lolitee.teesvelocitywhitelist.database.IDatabase;
+import com.lolitee.teesvelocitywhitelist.database.commands.CreateUserCommand;
+import com.lolitee.teesvelocitywhitelist.database.providers.MariaDB;
 import com.lolitee.teesvelocitywhitelist.discord.ICommand;
-import com.lolitee.teesvelocitywhitelist.events.PlayerJoin;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -11,11 +12,14 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.lolitee.teesvelocitywhitelist.TeesVelocityWhitelist.logger;
+import static com.lolitee.teesvelocitywhitelist.TeesVelocityWhitelist.server;
+import static com.lolitee.teesvelocitywhitelist.configuration.ConfigurationManager.*;
+import static com.lolitee.teesvelocitywhitelist.configuration.ConfigurationManager.database;
 import static com.lolitee.teesvelocitywhitelist.events.PlayerJoin.tokens;
 
 public class LinkCommand implements ICommand {
 
+    IDatabase db;
     @Override
     public String name() {
         return "link";
@@ -49,8 +53,20 @@ public class LinkCommand implements ICommand {
                 .filter(c -> c.equals(playerCode))
                 .findFirst();
 
-        logger.info(uuid.toString());
+        if(!uuid.isPresent()){
+            event.reply("Couldn't link your account to Discord");
+        }
 
-        event.reply(code).setEphemeral(true).queue();
+        if(server.getPlayer(uuid.get()).isPresent()){
+            String username = server.getPlayer(uuid.get()).get().getUsername();
+            event.reply(String.format("Linked %s to your discord account!", username));
+            return;
+        }
+        event.reply("Linked!").setEphemeral(true).queue();
+
+        db = new MariaDB(address, username, password, database);
+        db.executeNonQuery(new CreateUserCommand().values(new Object[] {uuid.get(), event.getId()}));
+
+
     }
 }
