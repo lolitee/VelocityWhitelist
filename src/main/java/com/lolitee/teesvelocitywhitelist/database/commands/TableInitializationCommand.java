@@ -1,6 +1,6 @@
-package Database.commands;
+package com.lolitee.teesvelocitywhitelist.database.commands;
 
-import Database.ICommand;
+import com.lolitee.teesvelocitywhitelist.database.ICommand;
 
 import static com.lolitee.teesvelocitywhitelist.configuration.ConfigurationManager.tablePrefix;
 

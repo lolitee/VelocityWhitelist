@@ -1,9 +1,10 @@
 package com.lolitee.teesvelocitywhitelist;
 
-import Database.commands.TableInitializationCommand;
-import Database.providers.H2;
-import Database.IDatabase;
-import Database.providers.MariaDB;
+import com.lolitee.teesvelocitywhitelist.database.commands.TableInitializationCommand;
+import com.lolitee.teesvelocitywhitelist.database.providers.H2;
+import com.lolitee.teesvelocitywhitelist.database.IDatabase;
+import com.lolitee.teesvelocitywhitelist.database.providers.MariaDB;
+import com.lolitee.teesvelocitywhitelist.discord.DiscordClient;
 import com.google.inject.Inject;
 import com.lolitee.teesvelocitywhitelist.configuration.ConfigurationManager;
 import com.lolitee.teesvelocitywhitelist.events.PlayerChat;
@@ -18,8 +19,6 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.UUID;
 
 import static com.lolitee.teesvelocitywhitelist.configuration.ConfigurationManager.*;
 
@@ -31,8 +30,6 @@ import static com.lolitee.teesvelocitywhitelist.configuration.ConfigurationManag
 public class TeesVelocityWhitelist {
     public static ProxyServer server;
     public static Logger logger;
-
-    private final HashMap<UUID, String> tokens = new HashMap<>();
     IDatabase db;
     @Inject
     public TeesVelocityWhitelist(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) throws IOException {
@@ -56,6 +53,7 @@ public class TeesVelocityWhitelist {
     public void onProxyInitialization(ProxyInitializeEvent event) {
         logger.info("Starting " + TeesVelocityWhitelist.class.getName() + "-" + BuildConstants.VERSION);
         db.executeNonQuery(new TableInitializationCommand());
+        new DiscordClient(token);
 
         server.getEventManager().register(this, new PlayerJoin());
         server.getEventManager().register(this, new PlayerChat());

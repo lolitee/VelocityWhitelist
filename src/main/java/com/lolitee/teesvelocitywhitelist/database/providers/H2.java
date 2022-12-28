@@ -1,6 +1,6 @@
-package Database.providers;
+package com.lolitee.teesvelocitywhitelist.database.providers;
 
-import Database.IDatabase;
+import com.lolitee.teesvelocitywhitelist.database.IDatabase;
 
 import java.sql.Connection;
 

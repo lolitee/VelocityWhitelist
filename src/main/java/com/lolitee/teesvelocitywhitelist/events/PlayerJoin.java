@@ -9,12 +9,14 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
+import java.util.HashMap;
 import java.util.Random;
+import java.util.UUID;
 
 import static com.lolitee.teesvelocitywhitelist.TeesVelocityWhitelist.logger;
 
 public class PlayerJoin {
-
+    private final HashMap<UUID, String> tokens = new HashMap<>();
     Random rnd = new Random();
 
     @Subscribe

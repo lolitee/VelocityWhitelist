@@ -1,4 +1,4 @@
-package Database;
+package com.lolitee.teesvelocitywhitelist.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
