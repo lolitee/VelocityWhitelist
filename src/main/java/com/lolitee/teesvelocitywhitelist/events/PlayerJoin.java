@@ -1,6 +1,8 @@
 package com.lolitee.teesvelocitywhitelist.events;
 
 import com.lolitee.teesvelocitywhitelist.classes.Code;
+import com.lolitee.teesvelocitywhitelist.database.IDatabase;
+import com.lolitee.teesvelocitywhitelist.database.commands.CheckPlayerCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -10,6 +12,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
@@ -18,12 +22,22 @@ import java.util.concurrent.TimeUnit;
 import static com.lolitee.teesvelocitywhitelist.TeesVelocityWhitelist.*;
 
 public class PlayerJoin {
+    IDatabase db;
     public static final HashMap<UUID, String> tokens = new HashMap<>();
     Random rnd = new Random();
 
     @Subscribe
     public void onPlayerJoin(PlayerChooseInitialServerEvent event){
         Player p = event.getPlayer();
+
+        ResultSet rs = db.execute(new CheckPlayerCommand().values(new Object[] {p.getUniqueId()}));
+        try {
+            if(rs.next()){
+                return;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         if (!tokens.containsKey(p.getUniqueId())){
             tokens.put(p.getUniqueId(), getRandomString(7));

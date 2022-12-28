@@ -1,7 +1,7 @@
 package com.lolitee.teesvelocitywhitelist.discord.commands;
 
 import com.lolitee.teesvelocitywhitelist.database.IDatabase;
-import com.lolitee.teesvelocitywhitelist.database.commands.CreateUserCommand;
+import com.lolitee.teesvelocitywhitelist.database.commands.CreatePlayerCommand;
 import com.lolitee.teesvelocitywhitelist.database.providers.MariaDB;
 import com.lolitee.teesvelocitywhitelist.discord.ICommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -50,11 +50,12 @@ public class LinkCommand implements ICommand {
         }
 
         Optional<UUID> uuid = tokens.keySet().stream()
-                .filter(c -> c.equals(playerCode))
+                .filter(c -> tokens.get(c).equals(code))
                 .findFirst();
 
         if(!uuid.isPresent()){
-            event.reply("Couldn't link your account to Discord");
+            event.reply("Couldn't link your account to Discord").setEphemeral(true).queue();
+            return;
         }
 
         if(server.getPlayer(uuid.get()).isPresent()){
@@ -65,7 +66,7 @@ public class LinkCommand implements ICommand {
         event.reply("Linked!").setEphemeral(true).queue();
 
         db = new MariaDB(address, username, password, database);
-        db.executeNonQuery(new CreateUserCommand().values(new Object[] {uuid.get(), event.getId()}));
+        db.executeNonQuery(new CreatePlayerCommand().values(new Object[] {uuid.get(), event.getUser().getId()}));
 
 
     }
