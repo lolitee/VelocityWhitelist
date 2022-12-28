@@ -1,5 +1,6 @@
 package com.lolitee.teesvelocitywhitelist.events;
 
+import com.lolitee.teesvelocitywhitelist.classes.Code;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -12,17 +13,28 @@ import net.kyori.adventure.text.format.TextDecoration;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-import static com.lolitee.teesvelocitywhitelist.TeesVelocityWhitelist.logger;
+import static com.lolitee.teesvelocitywhitelist.TeesVelocityWhitelist.*;
 
 public class PlayerJoin {
-    private final HashMap<UUID, String> tokens = new HashMap<>();
+    public static final HashMap<UUID, String> tokens = new HashMap<>();
     Random rnd = new Random();
 
     @Subscribe
     public void onPlayerJoin(PlayerChooseInitialServerEvent event){
         Player p = event.getPlayer();
-        logger.info(p.getUsername() + " has joined");
+
+        if (!tokens.containsKey(p.getUniqueId())){
+            tokens.put(p.getUniqueId(), getRandomString(7));
+            server.getScheduler()
+                    .buildTask(plugin, () -> {
+                        tokens.remove(p.getUniqueId());
+                    })
+                    .delay(15L, TimeUnit.MINUTES)
+                    .schedule();
+        }
+        String code = tokens.get(p.getUniqueId());
 
         final TextComponent textComponent = Component.text()
                 .append(Component.text("Disconnected!")
@@ -32,7 +44,7 @@ public class PlayerJoin {
                 .append(Component.text("Please execute the following command on Discord:"))
                 .appendNewline()
                 .appendNewline()
-                .append(Component.text("/link " + getRandomString(8))
+                .append(Component.text("/link " + code)
                         .color(TextColor.color(NamedTextColor.AQUA)))
                 .appendNewline()
                 .append(Component.text("Server: Aram Warriors 2.0")

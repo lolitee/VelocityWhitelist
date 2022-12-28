@@ -30,11 +30,13 @@ import static com.lolitee.teesvelocitywhitelist.configuration.ConfigurationManag
 public class TeesVelocityWhitelist {
     public static ProxyServer server;
     public static Logger logger;
+    public static TeesVelocityWhitelist plugin;
     IDatabase db;
     @Inject
     public TeesVelocityWhitelist(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) throws IOException {
         TeesVelocityWhitelist.server = server;
         TeesVelocityWhitelist.logger = logger;
+        TeesVelocityWhitelist.plugin = this;
         Files.createDirectories(dataDirectory);
         new ConfigurationManager(dataDirectory);
 

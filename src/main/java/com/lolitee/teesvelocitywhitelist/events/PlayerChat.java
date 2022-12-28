@@ -11,8 +11,8 @@ import static com.lolitee.teesvelocitywhitelist.TeesVelocityWhitelist.logger;
 public class PlayerChat {
     @Subscribe
     public void onPlayerChat(PlayerChatEvent event) {
-        Player p = event.getPlayer();
-        logger.info(p.getUsername());
+//        Player p = event.getPlayer();
+//        logger.info(p.getUsername());
     }
 
 
